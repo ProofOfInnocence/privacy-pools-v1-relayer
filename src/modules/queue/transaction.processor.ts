@@ -10,7 +10,7 @@ import { MembershipProof, Transaction } from '@/types';
 import { getToIntegerMultiplier, toWei } from '@/utilities';
 import { CONTRACT_ERRORS, SERVICE_ERRORS, jobStatus } from '@/constants';
 import { GasPriceService, ProviderService } from '@/services';
-// tslint:disable-next-line: no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const PinataClient = require('@pinata/sdk');
 
 import txManagerConfig from '@/config/txManager.config';
