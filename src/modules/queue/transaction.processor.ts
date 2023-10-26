@@ -10,15 +10,17 @@ import { MembershipProof, Transaction } from '@/types';
 import { getToIntegerMultiplier, toWei } from '@/utilities';
 import { CONTRACT_ERRORS, SERVICE_ERRORS, jobStatus } from '@/constants';
 import { GasPriceService, ProviderService } from '@/services';
-import pinataSDK from '@pinata/sdk';
+// tslint:disable-next-line: no-var-requires
+const PinataClient = require('@pinata/sdk');
 
-import txMangerConfig from '@/config/txManager.config';
+import txManagerConfig from '@/config/txManager.config';
 
 import { BaseProcessor } from './base.processor';
 
 @Injectable()
 @Processor('transaction')
 export class TransactionProcessor extends BaseProcessor<Transaction> {
+  public pinataClient: any;
   constructor(
     @InjectQueue('transaction') public transactionQueue: Queue,
     private configService: ConfigService,
@@ -28,6 +30,7 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
     super();
     this.queueName = 'transaction';
     this.queue = transactionQueue;
+    this.pinataClient = new PinataClient(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_API_KEY);
   }
 
   @Process()
@@ -38,9 +41,9 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
       console.log('membershipProof:', membershipProof);
       await this.checkFee({ fee: extData.fee, externalAmount: extData.extAmount });
       console.log('check fee done');
-      await this.checkProof({ proof: membershipProof });
+      await this.checkProof(membershipProof);
       console.log('check proof done');
-      await this.uploadProof({ proof: membershipProof });
+      await this.uploadProof(membershipProof, extData);
       console.log('upload proof done');
       const txHash = await this.submitTx(job);
       console.log('submit tx done');
@@ -71,7 +74,7 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
 
   async submitTx(job: Job<Transaction>) {
     try {
-      const txManager = new TxManager(txMangerConfig());
+      const txManager = new TxManager(txManagerConfig());
       console.log('@@@@@@@@');
       console.log('job.data:', job.data);
       const prepareTx = await this.prepareTransaction(job.data);
@@ -186,18 +189,17 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
   }
 
   //TODO: check proof
-  async checkProof({ proof }: { proof: MembershipProof }) {
+  async checkProof(proof: any) {
     try {
     } catch (err) {
       this.handleError(err);
     }
   }
 
-  async uploadProof({ proof }: { proof: MembershipProof }) {
+  async uploadProof(proof: any, extData: any) {
     console.log('proof: ', proof);
-    console.log('process.env.PINATA_API_KEY: ', process.env.PINATA_API_KEY);
-    console.log('process.env.PINATA_SECRET_API_KEY: ', process.env.PINATA_SECRET_API_KEY);
-    const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_API_KEY);
+    // console.log('process.env.PINATA_API_KEY: ', process.env.PINATA_API_KEY);
+    // console.log('process.env.PINATA_SECRET_API_KEY: ', process.env.PINATA_SECRET_API_KEY);
     console.log('create pinata client done');
     try {
       const options = {
@@ -209,16 +211,16 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
         },
       };
       console.log('prepare proof for upload done');
-      const res = await pinata.pinJSONToIPFS(proof, options);
+      const res = await this.pinataClient.pinJSONToIPFS(proof, options);
       console.log('CID: ', res);
-      if (res.IpfsHash != proof.membershipProofURI) {
+      if (res.IpfsHash != extData.membershipProofURI) {
         console.log('throw new Error(SERVICE_ERRORS.INSUFFICIENT_FEE);');
         throw new Error(SERVICE_ERRORS.IPFS_CID_FAIL);
       }
       return res;
     } catch (err) {
       console.log('err:', err);
-      // this.handleError(err);
+      this.handleError(err);
     }
   }
 }
