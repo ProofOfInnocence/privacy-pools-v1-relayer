@@ -1061,7 +1061,7 @@
   dependencies:
     tslib "2.5.0"
 
-"@nestjs/bull@^5.0.1":
+"@nestjs/bull@^0.6.3":
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/@nestjs/bull/-/bull-0.6.3.tgz#c93e97c4575828bee9664a3deca650c55292d5af"
   integrity sha512-CckH9O3t9qSiO4RCzdYvtFSaaMfIhTXMYagV/rtmVvI1SX5XNnxEaQXvtjxDBXF9DB1JE/5AejIl6ICym+MJIw==

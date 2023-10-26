@@ -10,7 +10,7 @@ import { MembershipProof, Transaction } from '@/types';
 import { getToIntegerMultiplier, toWei } from '@/utilities';
 import { CONTRACT_ERRORS, SERVICE_ERRORS, jobStatus } from '@/constants';
 import { GasPriceService, ProviderService } from '@/services';
-import PinataClient from '@pinata/sdk';
+import pinataSDK from '@pinata/sdk';
 
 import txMangerConfig from '@/config/txManager.config';
 
@@ -34,14 +34,16 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
   async processTransactions(job: Job<Transaction>, cb: DoneCallback) {
     try {
       const { extData, membershipProof } = job.data;
-      // console.log('extData:', extData);
-
+      console.log('extData:', extData);
+      console.log('membershipProof:', membershipProof);
       await this.checkFee({ fee: extData.fee, externalAmount: extData.extAmount });
-      // await this.checkProof({ proof: membershipProof });
-      // await this.uploadProof({ proof: membershipProof });
-      // console.log('!!!!!!!');
+      console.log('check fee done');
+      await this.checkProof({ proof: membershipProof });
+      console.log('check proof done');
+      await this.uploadProof({ proof: membershipProof });
+      console.log('upload proof done');
       const txHash = await this.submitTx(job);
-      // console.log('!!!!!!!');
+      console.log('submit tx done');
       console.log('txHash:', txHash);
       cb(null, txHash);
     } catch (err) {
@@ -192,7 +194,11 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
   }
 
   async uploadProof({ proof }: { proof: MembershipProof }) {
-    const pinata = new PinataClient(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_API_KEY);
+    console.log('proof: ', proof);
+    console.log('process.env.PINATA_API_KEY: ', process.env.PINATA_API_KEY);
+    console.log('process.env.PINATA_SECRET_API_KEY: ', process.env.PINATA_SECRET_API_KEY);
+    const pinata = new pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_API_KEY);
+    console.log('create pinata client done');
     try {
       const options = {
         pinataMetadata: {
@@ -202,12 +208,14 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
           cidVersion: 0,
         },
       };
+      console.log('prepare proof for upload done');
       const res = await pinata.pinJSONToIPFS(proof, options);
       console.log('CID: ', res);
       if (res.IpfsHash != proof.membershipProofURI) {
         console.log('throw new Error(SERVICE_ERRORS.INSUFFICIENT_FEE);');
         throw new Error(SERVICE_ERRORS.IPFS_CID_FAIL);
       }
+      return res;
     } catch (err) {
       console.log('err:', err);
       // this.handleError(err);

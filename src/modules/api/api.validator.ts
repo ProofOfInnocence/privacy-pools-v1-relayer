@@ -52,7 +52,7 @@ const transactionSchema = {
       },
     },
   },
-  additionalProperties: false,
+  additionalProperties: true,
   required: ['extData', 'args'],
 };
 
