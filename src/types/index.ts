@@ -29,7 +29,10 @@ export type ArgsProof = {
   extDataHash: string;
 };
 
+export type MembershipProof = { membershipProofURI: string };
+
 export interface Transaction {
+  membershipProof: MembershipProof;
   extData: ExtData;
   args: ArgsProof;
   status: string;

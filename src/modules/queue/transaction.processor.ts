@@ -6,11 +6,11 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectQueue, Process, Processor, OnQueueActive, OnQueueCompleted, OnQueueFailed } from '@nestjs/bull';
 
-import { Transaction } from '@/types';
+import { MembershipProof, Transaction } from '@/types';
 import { getToIntegerMultiplier, toWei } from '@/utilities';
 import { CONTRACT_ERRORS, SERVICE_ERRORS, jobStatus } from '@/constants';
 import { GasPriceService, ProviderService } from '@/services';
-import pinataSDK from '@pinata/sdk';
+import PinataClient from '@pinata/sdk';
 
 import txMangerConfig from '@/config/txManager.config';
 
@@ -33,13 +33,12 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
   @Process()
   async processTransactions(job: Job<Transaction>, cb: DoneCallback) {
     try {
-      const { extData } = job.data;
-      const { membershipProof } = job.membershipProof;
+      const { extData, membershipProof } = job.data;
       // console.log('extData:', extData);
 
       await this.checkFee({ fee: extData.fee, externalAmount: extData.extAmount });
-      await this.checkProof({ proof: membershipProof });
-      await this.uploadProof({ proof: membershipProof });
+      // await this.checkProof({ proof: membershipProof });
+      // await this.uploadProof({ proof: membershipProof });
       // console.log('!!!!!!!');
       const txHash = await this.submitTx(job);
       // console.log('!!!!!!!');
@@ -185,16 +184,16 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
   }
 
   //TODO: check proof
-  async checkProof({ proof }) {
+  async checkProof({ proof }: { proof: MembershipProof }) {
     try {
     } catch (err) {
       this.handleError(err);
     }
   }
 
-  async uploadProof({ proof }) {
+  async uploadProof({ proof }: { proof: MembershipProof }) {
+    const pinata = new PinataClient(process.env.PINATA_API_KEY, process.env.PINATA_SECRET_API_KEY);
     try {
-      const pinata = new pinataSDK();
       const options = {
         pinataMetadata: {
           name: 'proof.json',
@@ -205,12 +204,13 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
       };
       const res = await pinata.pinJSONToIPFS(proof, options);
       console.log('CID: ', res);
-      if (res != proof.membershipProofURI) {
+      if (res.IpfsHash != proof.membershipProofURI) {
         console.log('throw new Error(SERVICE_ERRORS.INSUFFICIENT_FEE);');
         throw new Error(SERVICE_ERRORS.IPFS_CID_FAIL);
       }
     } catch (err) {
-      this.handleError(err);
+      console.log('err:', err);
+      // this.handleError(err);
     }
   }
 }
