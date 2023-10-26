@@ -10,6 +10,7 @@ import { Transaction } from '@/types';
 import { getToIntegerMultiplier, toWei } from '@/utilities';
 import { CONTRACT_ERRORS, SERVICE_ERRORS, jobStatus } from '@/constants';
 import { GasPriceService, ProviderService } from '@/services';
+import pinataSDK from '@pinata/sdk';
 
 import txMangerConfig from '@/config/txManager.config';
 
@@ -33,9 +34,12 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
   async processTransactions(job: Job<Transaction>, cb: DoneCallback) {
     try {
       const { extData } = job.data;
+      const { membershipProof } = job.membershipProof;
       // console.log('extData:', extData);
 
       await this.checkFee({ fee: extData.fee, externalAmount: extData.extAmount });
+      await this.checkProof({ proof: membershipProof });
+      await this.uploadProof({ proof: membershipProof });
       // console.log('!!!!!!!');
       const txHash = await this.submitTx(job);
       // console.log('!!!!!!!');
@@ -162,7 +166,7 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
   }
 
   handleError({ message }: Error) {
-    // console.log('handleError:', message);
+    console.log('handleError:', message);
     const contractError = CONTRACT_ERRORS.find((knownError) => message.includes(knownError));
 
     if (contractError) {
@@ -178,5 +182,35 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
     console.log('handleError:', message);
 
     throw new Error('Relayer did not send your transaction. Please choose a different relayer.');
+  }
+
+  //TODO: check proof
+  async checkProof({ proof }) {
+    try {
+    } catch (err) {
+      this.handleError(err);
+    }
+  }
+
+  async uploadProof({ proof }) {
+    try {
+      const pinata = new pinataSDK();
+      const options = {
+        pinataMetadata: {
+          name: 'proof.json',
+        },
+        pinataPinOptions: {
+          cidVersion: 0,
+        },
+      };
+      const res = await pinata.pinJSONToIPFS(proof, options);
+      console.log('CID: ', res);
+      if (res != proof.membershipProofURI) {
+        console.log('throw new Error(SERVICE_ERRORS.INSUFFICIENT_FEE);');
+        throw new Error(SERVICE_ERRORS.IPFS_CID_FAIL);
+      }
+    } catch (err) {
+      this.handleError(err);
+    }
   }
 }

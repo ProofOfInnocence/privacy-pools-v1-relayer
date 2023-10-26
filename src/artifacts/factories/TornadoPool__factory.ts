@@ -15,11 +15,6 @@ const _abi = [
         type: "address",
       },
       {
-        internalType: "contract IVerifier",
-        name: "_verifier16",
-        type: "address",
-      },
-      {
         internalType: "uint32",
         name: "_levels",
         type: "uint32",
@@ -37,11 +32,6 @@ const _abi = [
       {
         internalType: "uint256",
         name: "_maximumDepositAmount",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "_minimumWithdrawalAmount",
         type: "uint256",
       },
     ],
@@ -81,12 +71,6 @@ const _abi = [
         internalType: "bytes32",
         name: "nullifier",
         type: "bytes32",
-      },
-      {
-        indexed: false,
-        internalType: "bytes",
-        name: "encryptedInput",
-        type: "bytes",
       },
     ],
     name: "NewNullifier",
@@ -139,19 +123,25 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: "address",
-        name: "owner",
+        name: "recipient",
         type: "address",
       },
       {
         indexed: false,
-        internalType: "bytes",
-        name: "key",
-        type: "bytes",
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "membershipProofURI",
+        type: "string",
       },
     ],
-    name: "PublicKey",
+    name: "NewWithdrawal",
     type: "event",
   },
   {
@@ -183,19 +173,6 @@ const _abi = [
   {
     inputs: [],
     name: "MAX_FEE",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "MIN_EXT_AMOUNT_LIMIT",
     outputs: [
       {
         internalType: "uint256",
@@ -430,19 +407,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "minimumWithdrawalAmount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
     name: "nextIndex",
     outputs: [
       {
@@ -471,232 +435,6 @@ const _abi = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        components: [
-          {
-            internalType: "bytes",
-            name: "proof",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes32",
-            name: "root",
-            type: "bytes32",
-          },
-          {
-            internalType: "bytes32[]",
-            name: "inputNullifiers",
-            type: "bytes32[]",
-          },
-          {
-            internalType: "bytes32[2]",
-            name: "outputCommitments",
-            type: "bytes32[2]",
-          },
-          {
-            internalType: "uint256",
-            name: "publicAmount",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes32",
-            name: "extDataHash",
-            type: "bytes32",
-          },
-        ],
-        internalType: "struct TornadoPool.Proof",
-        name: "_args",
-        type: "tuple",
-      },
-      {
-        components: [
-          {
-            internalType: "address",
-            name: "recipient",
-            type: "address",
-          },
-          {
-            internalType: "int256",
-            name: "extAmount",
-            type: "int256",
-          },
-          {
-            internalType: "address",
-            name: "relayer",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "fee",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "encryptedOutput1",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes",
-            name: "encryptedOutput2",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes",
-            name: "encryptedInput1",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes",
-            name: "encryptedInput2",
-            type: "bytes",
-          },
-        ],
-        internalType: "struct TornadoPool.ExtData",
-        name: "_extData",
-        type: "tuple",
-      },
-    ],
-    name: "onTransact",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        components: [
-          {
-            internalType: "address",
-            name: "owner",
-            type: "address",
-          },
-          {
-            internalType: "bytes",
-            name: "publicKey",
-            type: "bytes",
-          },
-        ],
-        internalType: "struct TornadoPool.Account",
-        name: "_account",
-        type: "tuple",
-      },
-    ],
-    name: "register",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        components: [
-          {
-            internalType: "address",
-            name: "owner",
-            type: "address",
-          },
-          {
-            internalType: "bytes",
-            name: "publicKey",
-            type: "bytes",
-          },
-        ],
-        internalType: "struct TornadoPool.Account",
-        name: "_account",
-        type: "tuple",
-      },
-      {
-        components: [
-          {
-            internalType: "bytes",
-            name: "proof",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes32",
-            name: "root",
-            type: "bytes32",
-          },
-          {
-            internalType: "bytes32[]",
-            name: "inputNullifiers",
-            type: "bytes32[]",
-          },
-          {
-            internalType: "bytes32[2]",
-            name: "outputCommitments",
-            type: "bytes32[2]",
-          },
-          {
-            internalType: "uint256",
-            name: "publicAmount",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes32",
-            name: "extDataHash",
-            type: "bytes32",
-          },
-        ],
-        internalType: "struct TornadoPool.Proof",
-        name: "_proofArgs",
-        type: "tuple",
-      },
-      {
-        components: [
-          {
-            internalType: "address",
-            name: "recipient",
-            type: "address",
-          },
-          {
-            internalType: "int256",
-            name: "extAmount",
-            type: "int256",
-          },
-          {
-            internalType: "address",
-            name: "relayer",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "fee",
-            type: "uint256",
-          },
-          {
-            internalType: "bytes",
-            name: "encryptedOutput1",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes",
-            name: "encryptedOutput2",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes",
-            name: "encryptedInput1",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes",
-            name: "encryptedInput2",
-            type: "bytes",
-          },
-        ],
-        internalType: "struct TornadoPool.ExtData",
-        name: "_extData",
-        type: "tuple",
-      },
-    ],
-    name: "registerAndTransact",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -746,9 +484,9 @@ const _abi = [
             type: "bytes32",
           },
           {
-            internalType: "bytes32[]",
+            internalType: "bytes32[2]",
             name: "inputNullifiers",
-            type: "bytes32[]",
+            type: "bytes32[2]",
           },
           {
             internalType: "bytes32[2]",
@@ -766,7 +504,7 @@ const _abi = [
             type: "bytes32",
           },
         ],
-        internalType: "struct TornadoPool.Proof",
+        internalType: "struct PrivacyPool.Proof",
         name: "_args",
         type: "tuple",
       },
@@ -803,17 +541,12 @@ const _abi = [
             type: "bytes",
           },
           {
-            internalType: "bytes",
-            name: "encryptedInput1",
-            type: "bytes",
-          },
-          {
-            internalType: "bytes",
-            name: "encryptedInput2",
-            type: "bytes",
+            internalType: "string",
+            name: "membershipProofURI",
+            type: "string",
           },
         ],
-        internalType: "struct TornadoPool.ExtData",
+        internalType: "struct PrivacyPool.ExtData",
         name: "_extData",
         type: "tuple",
       },
@@ -821,19 +554,6 @@ const _abi = [
     name: "transact",
     outputs: [],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "verifier16",
-    outputs: [
-      {
-        internalType: "contract IVerifier",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
   {
@@ -864,9 +584,9 @@ const _abi = [
             type: "bytes32",
           },
           {
-            internalType: "bytes32[]",
+            internalType: "bytes32[2]",
             name: "inputNullifiers",
-            type: "bytes32[]",
+            type: "bytes32[2]",
           },
           {
             internalType: "bytes32[2]",
@@ -884,7 +604,7 @@ const _abi = [
             type: "bytes32",
           },
         ],
-        internalType: "struct TornadoPool.Proof",
+        internalType: "struct PrivacyPool.Proof",
         name: "_args",
         type: "tuple",
       },
