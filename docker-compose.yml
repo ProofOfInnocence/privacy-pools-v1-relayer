@@ -2,14 +2,16 @@ version: '3'
 
 services:
   server:
-    image: tornadocash/relayer:nova
+    image: privacy-pools:relayer
     restart: always
-    command: start:prod
+    command: start
     env_file: .env
     environment:
-      REDIS_URL: redis://redis/0
+      REDIS_URL: redis:6379
       nginx_proxy_read_timeout: 600
     depends_on: [redis]
+    ports:
+      - 8000:8000
     links:
       - redis
 
@@ -17,6 +19,7 @@ services:
     image: redis
     restart: always
     command: [redis-server, --appendonly, 'yes']
+    ports: ['6379:6379']
     volumes:
       - redis:/data
 

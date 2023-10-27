@@ -9,7 +9,7 @@ import { toWei } from '@/utilities';
 import { SERVICE_ERRORS } from '@/constants';
 
 const bump = (gas: BigNumber, percent: number) => gas.mul(percent).div(100).toHexString();
-const gweiToWei = (value: number) => toWei(String(value), 'gwei');
+const gweiToWei = (value: number) => toWei(String(value.toFixed(20)), 'gwei');
 
 const percentBump = {
   INSTANT: 150,
@@ -29,27 +29,27 @@ export class GasPriceService {
   }
 
   async getGasPrice() {
-    // try {
-    //   const instance = new GasPriceOracle({
-    //     chainId: this.chainId,
-    //     defaultRpc: this.rpcUrl,
-    //   });
-
-    //   const result = (await instance.gasPrices({ isLegacy: true })) as GasPrice;
-
-    return {
-      //     instant: bump(gweiToWei(result.instant), percentBump.INSTANT),
-      //     fast: bump(gweiToWei(result.instant), percentBump.FAST),
-      //     standard: bump(gweiToWei(result.standard), percentBump.STANDARD),
-      //     low: bump(gweiToWei(result.low), percentBump.LOW),
-      instant: gweiToWei(50),
-      fast: gweiToWei(50),
-      standard: gweiToWei(50),
-      low: gweiToWei(50),
-    };
-    //   } catch (err) {
-    //     console.log('getGasPrice has error:', err.message);
-    //     throw new Error(SERVICE_ERRORS.GAS_PRICE);
-    //   }
+    try {
+      console.log('creating GasPriceOracle instance...');
+      const instance = new GasPriceOracle({
+        chainId: this.chainId,
+        defaultRpc: this.rpcUrl,
+      });
+      console.log('gasPriceOracle instance created');
+      console.log('calling gasPrices...');
+      const result = (await instance.gasPrices({ isLegacy: true })) as GasPrice;
+      console.log('gasPrices called');
+      console.log('result:', result);
+      console.log('type of result:', typeof result);
+      return {
+        instant: bump(gweiToWei(result.instant), percentBump.INSTANT),
+        fast: bump(gweiToWei(result.fast), percentBump.FAST),
+        standard: bump(gweiToWei(result.standard), percentBump.STANDARD),
+        low: bump(gweiToWei(result.low), percentBump.LOW),
+      };
+    } catch (err) {
+      console.log('getGasPrice has error:', err.message);
+      throw new Error(SERVICE_ERRORS.GAS_PRICE);
+    }
   }
 }
