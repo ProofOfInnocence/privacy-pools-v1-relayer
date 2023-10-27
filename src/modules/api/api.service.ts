@@ -32,7 +32,7 @@ class ApiService {
   }
 
   root(): string {
-    return `This is <a href=https://tornado.cash>tornado.cash</a> Relayer service. Check the <a href=/status>/status</a> for settings`;
+    return `This is a Privacy Pool Relayer service. Check the <a href=/status>/status</a> for settings`;
   }
 
   async transaction(data: any): Promise<string> {

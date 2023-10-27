@@ -56,7 +56,7 @@ const transactionSchema = {
   required: ['extData', 'args'],
 };
 
-const validateTornadoTransaction = ajv.compile(transactionSchema);
+const validatePrivacyTransaction = ajv.compile(transactionSchema);
 
 function getInputError(validator: ValidateFunction, data: typeof transactionSchema) {
   validator(data);
@@ -68,7 +68,7 @@ function getInputError(validator: ValidateFunction, data: typeof transactionSche
 }
 
 function validateTransactionRequest(data: typeof transactionSchema) {
-  return getInputError(validateTornadoTransaction, data);
+  return getInputError(validatePrivacyTransaction, data);
 }
 
 export { validateTransactionRequest };

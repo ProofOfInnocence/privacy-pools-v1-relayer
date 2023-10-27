@@ -4,7 +4,7 @@
 
 import { Contract, Signer, utils } from "ethers";
 import { Provider } from "@ethersproject/providers";
-import type { TornadoPool, TornadoPoolInterface } from "../TornadoPool";
+import type { PrivacyPool, PrivacyPoolInterface } from "../PrivacyPool";
 
 const _abi = [
   {
@@ -641,15 +641,15 @@ const _abi = [
   },
 ];
 
-export class TornadoPool__factory {
+export class PrivacyPool__factory {
   static readonly abi = _abi;
-  static createInterface(): TornadoPoolInterface {
-    return new utils.Interface(_abi) as TornadoPoolInterface;
+  static createInterface(): PrivacyPoolInterface {
+    return new utils.Interface(_abi) as PrivacyPoolInterface;
   }
   static connect(
     address: string,
     signerOrProvider: Signer | Provider
-  ): TornadoPool {
-    return new Contract(address, _abi, signerOrProvider) as TornadoPool;
+  ): PrivacyPool {
+    return new Contract(address, _abi, signerOrProvider) as PrivacyPool;
   }
 }

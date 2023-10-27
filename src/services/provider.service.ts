@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { ChainId } from '@/types';
 import { CONTRACT_NETWORKS } from '@/constants';
-import { TornadoPool__factory as TornadoPool } from '@/artifacts';
+import { PrivacyPool__factory as PrivacyPool } from '@/artifacts';
 
 @Injectable()
 export class ProviderService {
@@ -30,9 +30,9 @@ export class ProviderService {
     return this.providers.get(chainId)!;
   }
 
-  getTornadoPool() {
+  getPrivacyPool() {
     // console.log(this.provider.getBalance('0xdf3e18d64bc6a983f673ab319ccae4f1a57c7097'));
-    return TornadoPool.connect(CONTRACT_NETWORKS[this.chainId], this.provider);
+    return PrivacyPool.connect(CONTRACT_NETWORKS[this.chainId], this.provider);
   }
 
   async checkSenderBalance() {

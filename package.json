@@ -1,11 +1,11 @@
 {
-  "name": "nova-relayer",
+  "name": "privacy-pools-relayer",
   "version": "0.0.6",
-  "description": "Relayer for Tornado.cash Nova privacy solution. https://nova.tornado.ws",
+  "description": "Relayer for Privacy Pools privacy solution (built on Tornado Nova Relayer)",
   "author": "tornado.cash",
   "license": "MIT",
   "scripts": {
-    "compile": "typechain --target ethers-v5 --out-dir ./src/anestrtifacts './src/abi/*.json'",
+    "compile": "typechain --target ethers-v5 --out-dir ./src/artifacts './src/abi/*.json'",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "build:docker": "docker build -t privacy-pools:relayer .",

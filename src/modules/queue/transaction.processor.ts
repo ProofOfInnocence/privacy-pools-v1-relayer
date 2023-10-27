@@ -112,7 +112,7 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
   }
 
   async prepareTransaction({ extData, args }) {
-    const contract = this.providerService.getTornadoPool();
+    const contract = this.providerService.getPrivacyPool();
     console.log('########');
     const data = contract.interface.encodeFunctionData('transact', [args, extData]);
     console.log('########');

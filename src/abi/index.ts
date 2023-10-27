@@ -1,5 +1,5 @@
-import TORNADO_POOL from './TornadoPool.json';
+import PRIVACY_POOL from './PrivacyPool.json';
 
 export const abi = {
-  TORNADO_POOL,
+  PRIVACY_POOL,
 };
