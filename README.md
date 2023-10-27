@@ -1,4 +1,4 @@
-# Relayer for Tornado Cash Nova [![Build Status](https://github.com/tornadocash/tornado-pool-relayer/workflows/build/badge.svg)](https://github.com/tornadocash/tornado-pool-relayer/actions) [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/tornadocash/nova-relayer?logo=docker&logoColor=%23FFFFFF&sort=semver)](https://hub.docker.com/repository/docker/tornadocash/nova-relayer)
+# Relayer for Privacy Pools (built on Tornado Nova Relayer)
 
 ## Deploy with docker-compose (recommended)
 
@@ -30,17 +30,17 @@ _The following instructions are for Ubuntu 22.10, other operating systems may va
 
 1. Clone this repository
 
-   `git clone https://git.tornado.ws/tornadocash/nova-relayer && cd nova-relayer`
+   `git clone https://github.com/chainwayxyz/privacy-pools-relayer.git && cd privacy-pools-relayer`
 
 2. Copy `.env.example` to `.env` and setup environment variables in `.env` file
 
-   - set `CHAIN_ID` (100 for xdai, 1 for mainnet)
+   - set `CHAIN_ID` (31337 for localhost, 5 for goerli)
    - set `PRIVATE_KEY` for your relayer address (without 0x prefix)
    - set `VIRTUAL_HOST` and `LETSENCRYPT_HOST` to your domain and add DNS record pointing to your relayer ip address
    - set `REWARD_ADDRESS` - eth address that is used to collect fees
    - set `RPC_URL` rpc url for your node
-   - set `ORACLE_RPC_URL` - rpc url for mainnet node for fetching prices(always have to be on mainnet)
-   - set `WITHDRAWAL_SERVICE_FEE` - fee in % that is used for tornado withdrawals
+   - set `ORACLE_RPC_URL` - rpc url for goerli node for fetching prices
+   - set `WITHDRAWAL_SERVICE_FEE` - fee in % that is used for withdrawals
    - set `TRANSFER_SERVICE_FEE` - fee is a fixed value in ether for transfer
    - set `CONFIRMATIONS` if needed - how many block confirmations to wait before processing an event. Not recommended to set less than 3
    - set `MAX_GAS_PRICE` if needed - maximum value of gwei value for relayer's transaction
@@ -64,9 +64,6 @@ curl -X POST -H 'content-type:application/json' --data '<input data>' http://127
 
 Relayer should return a transaction hash
 
-In that case you will need to add https termination yourself because browsers with default settings will prevent https
-tornado.cash UI from submitting your request over http connection
-
 ## Architecture
 
 - Abi: Json ABI for working with contracts
@@ -85,8 +82,7 @@ tornado.cash UI from submitting your request over http connection
   4. `main.ts` The entry file of the application will take in your module bundle and create an app instance using the NestFactory provided by Nest.
 - Services:
   1. `gas-price.ts` update gas prices
-  2. `offchain-price.ts` update the exchange rate
-  3. `provider.ts` add-on for working with ethers js
+  2. `provider.ts` add-on for working with ethers js
 - Types: types for the application
 - Utilities: helpers functions
 
