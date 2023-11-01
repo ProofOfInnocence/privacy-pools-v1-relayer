@@ -5,12 +5,12 @@ const NETWORKS_INFO: { [chainId in ChainId] } = {
   [ChainId.GOERLI]: {
     symbol: 'goerli',
     gasLimit: BigNumber.from(2000000),
-    minimumBalance: '0.5',
+    minimumBalance: '0.1',
   },
   [ChainId.LOCALHOST]: {
     symbol: 'localhost',
     gasLimit: BigNumber.from(2000000),
-    minimumBalance: '0.5',
+    minimumBalance: '0.1',
   },
 };
 

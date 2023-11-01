@@ -39,7 +39,7 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
       const { extData, membershipProof } = job.data;
       console.log('extData:', extData);
       console.log('membershipProof:', membershipProof);
-      await this.checkFee({ fee: extData.fee, externalAmount: extData.extAmount });
+      await this.checkFee({ fee: extData.fee });
       console.log('check fee done');
       await this.checkProof(membershipProof);
       console.log('check proof done');
@@ -78,7 +78,7 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
       console.log('@@@@@@@@');
       console.log('job.data:', job.data);
       const prepareTx = await this.prepareTransaction(job.data);
-      console.log('job.data:', job.data);
+      console.log('prepareTx:', prepareTx);
       const tx = await txManager.createTx(prepareTx);
 
       const receipt = await tx
@@ -129,35 +129,35 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
     };
   }
 
-  getServiceFee(externalAmount) {
-    const amount = BigNumber.from(externalAmount);
-    const { serviceFee } = this.configService.get('base');
+  // getServiceFee(externalAmount) {
+  //   const amount = BigNumber.from(externalAmount);
+  //   const { serviceFee } = this.configService.get('base');
 
-    // for withdrawals the amount is negative
-    if (amount.isNegative()) {
-      const oneEther = getToIntegerMultiplier();
+  //   // for withdrawals the amount is negative
+  //   if (amount.isNegative()) {
+  //     const oneEther = getToIntegerMultiplier();
 
-      const share = Number(serviceFee.withdrawal) / 100;
-      return amount.mul(toWei(share.toString())).div(oneEther);
-    }
+  //     const share = Number(serviceFee.withdrawal) / 100;
+  //     return amount.mul(toWei(share.toString())).div(oneEther);
+  //   }
 
-    return serviceFee.transfer;
-  }
+  //   return serviceFee.transfer;
+  // }
 
-  async checkFee({ fee, externalAmount }) {
+  async checkFee({ fee }) {
     console.log('fee:', fee);
     try {
-      const { gasLimit } = this.configService.get('base');
+      const { gasLimit, serviceFee } = this.configService.get('base');
       const { fast } = await this.gasPriceService.getGasPrice();
       console.log('fast:', fast);
 
       const operationFee = BigNumber.from(fast).mul(gasLimit);
       console.log('operationFee:', operationFee);
-      const feePercent = this.getServiceFee(externalAmount);
-      console.log('feePercent:', feePercent);
+      // const feePercent = this.getServiceFee(externalAmount);
+      // console.log('feePercent:', feePercent);
       const expense = operationFee.div(toWei('1'));
       console.log('expense:', expense);
-      const desiredFee = expense.add(feePercent);
+      const desiredFee = expense.add(serviceFee.transfer);
       console.log('desiredFee:', desiredFee);
       if (BigNumber.from(fee).lt(desiredFee)) {
         console.log('throw new Error(SERVICE_ERRORS.INSUFFICIENT_FEE);');
@@ -211,9 +211,9 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
         },
       };
       console.log('prepare proof for upload done');
-      const res = await this.pinataClient.pinJSONToIPFS(proof, options);
+      const res = await this.pinataClient.pinJSONToIPFS(JSON.parse(proof), options);
       console.log('CID: ', res);
-      if (res.IpfsHash != extData.membershipProofURI) {
+      if ("ipfs://" + res.IpfsHash != extData.membershipProofURI) {
         console.log('throw new Error(SERVICE_ERRORS.INSUFFICIENT_FEE);');
         throw new Error(SERVICE_ERRORS.IPFS_CID_FAIL);
       }
