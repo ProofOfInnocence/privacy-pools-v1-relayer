@@ -18,8 +18,9 @@ const addressType = {
 };
 
 const proofType = { type: 'string', pattern: '^0x[a-fA-F0-9]{512}$' };
+const membershipProofType = { type: 'string', pattern: '^ipfs://[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$' };
 const bytes32Type = { type: 'string', pattern: '^0x[a-fA-F0-9]{64}$' };
-const externalAmountType = { type: 'string', pattern: '^(0x[a-fA-F0-9]{64}|-0x[a-fA-F0-9]{63})$' };
+const externalAmountType = { type: 'string', pattern: '^-?[0-9]+$' };
 const encryptedOutputType = { type: 'string', pattern: '^0x[a-fA-F0-9]{312}$' };
 const arrayType = { type: 'array', items: bytes32Type };
 const booleanType = { type: 'boolean' };
@@ -36,8 +37,7 @@ const transactionSchema = {
         fee: bytes32Type,
         recipient: addressType,
         relayer: addressType,
-        isL1Withdrawal: booleanType,
-        l1Fee: bytes32Type,
+        membershipProofURI: membershipProofType,
       },
     },
     args: {

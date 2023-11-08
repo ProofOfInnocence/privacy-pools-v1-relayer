@@ -9,7 +9,27 @@ import { toWei } from '@/utilities';
 import { SERVICE_ERRORS } from '@/constants';
 
 const bump = (gas: BigNumber, percent: number) => gas.mul(percent).div(100).toHexString();
-const gweiToWei = (value: number) => toWei(String(value.toFixed(20)), 'gwei');
+
+function toNonExponential(value: string) {
+  const valueParts = value.split('e');
+  if (valueParts.length === 1) return value; // not in exponential notation
+
+  let [base, exponent] = valueParts;
+  let exponentnum = parseInt(exponent, 10); // convert exponent to a number
+
+  // Split the base into two parts at the decimal point
+  let [integer, fraction] = base.split('.');
+  if (!fraction) fraction = '';
+
+  if (exponentnum >= 0) {
+    return integer + fraction.padEnd(exponentnum, '0');
+  } else {
+    const fractionDigits = Math.abs(exponentnum) - integer.length;
+    return '0.' + '0'.repeat(fractionDigits) + integer + fraction;
+  }
+}
+
+const gweiToWei = (value: number) => toWei(toNonExponential(value.toString()), 'gwei');
 
 const percentBump = {
   INSTANT: 150,
@@ -30,20 +50,16 @@ export class GasPriceService {
 
   async getGasPrice() {
     try {
-      console.log('creating GasPriceOracle instance...');
       const instance = new GasPriceOracle({
         chainId: this.chainId,
         defaultRpc: this.rpcUrl,
       });
-      console.log('gasPriceOracle instance created');
-      console.log('calling gasPrices...');
+
       const result = (await instance.gasPrices({ isLegacy: true })) as GasPrice;
-      console.log('gasPrices called');
-      console.log('result:', result);
-      console.log('type of result:', typeof result);
+
       return {
         instant: bump(gweiToWei(result.instant), percentBump.INSTANT),
-        fast: bump(gweiToWei(result.fast), percentBump.FAST),
+        fast: bump(gweiToWei(result.instant), percentBump.FAST),
         standard: bump(gweiToWei(result.standard), percentBump.STANDARD),
         low: bump(gweiToWei(result.low), percentBump.LOW),
       };
