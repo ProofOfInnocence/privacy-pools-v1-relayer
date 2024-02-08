@@ -2,7 +2,7 @@ import { ChainId } from '@/types';
 
 export const CONTRACT_NETWORKS: { [chainId in ChainId]: string } = {
   // [ChainId.MAINNET]: '',
-  [ChainId.GOERLI]: '0x49Bf92Fa466854637aE5a4cD00E97DDEA43C0767',
+  [ChainId.GOERLI]: '0x30221943644ffaa55f20e915a83352d0548585ca',
   [ChainId.LOCALHOST]: '0xdc64a140aa3e981100a9beca4e685f962f0cf6c9',
 };
 

@@ -14,6 +14,7 @@ export const baseConfig = () => ({
     chainId: Number(process.env.CHAIN_ID),
     serviceFee: {
       transfer: toWei(process.env.TRANSFER_SERVICE_FEE).toString(),
+      withdrawal: Number(process.env.WITHDRAWAL_SERVICE_FEE)
     },
     pinataApiKey: process.env.PINATA_API_KEY,
     pinataSecretApiKey: process.env.PINATA_SECRET_API_KEY,
