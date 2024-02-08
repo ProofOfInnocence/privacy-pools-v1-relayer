@@ -39,7 +39,7 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
       const { extData, membershipProof } = job.data;
       console.log('extData:', extData);
       console.log('membershipProof:', membershipProof);
-      await this.checkFee({ fee: extData.fee });
+      await this.checkFee({ fee: extData.fee, externalAmount: extData.extAmount });
       console.log('check fee done');
       await this.checkProof(membershipProof);
       console.log('check proof done');
@@ -129,36 +129,39 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
     };
   }
 
-  // getServiceFee(externalAmount) {
-  //   const amount = BigNumber.from(externalAmount);
-  //   const { serviceFee } = this.configService.get('base');
+  getServiceFee(externalAmount) {
+    const amount = BigNumber.from(externalAmount);
+    const { serviceFee } = this.configService.get('base');
 
-  //   // for withdrawals the amount is negative
-  //   if (amount.isNegative()) {
-  //     const oneEther = getToIntegerMultiplier();
+    // for withdrawals the amount is negative
+    if (amount.isNegative()) {
+      const oneEther = getToIntegerMultiplier();
 
-  //     const share = Number(serviceFee.withdrawal) / 100;
-  //     return amount.mul(toWei(share.toString())).div(oneEther);
-  //   }
+      const share = Number(serviceFee.withdrawal) / 100;
+      return amount.mul(toWei(share.toString())).div(oneEther).mul(-1).add(serviceFee.transfer);
+    } else {
+      throw "Only withdrawals are allowed";
+    }
 
-  //   return serviceFee.transfer;
-  // }
+    return serviceFee.transfer;
+  }
 
-  async checkFee({ fee }) {
+  async checkFee({ fee, externalAmount }) {
     console.log('fee:', fee);
     try {
-      const { gasLimit, serviceFee } = this.configService.get('base');
+      const { gasLimit } = this.configService.get('base');
       const { fast } = await this.gasPriceService.getGasPrice();
-      console.log('fast:', fast);
-
+      console.log("Gas Limit", gasLimit);
       const operationFee = BigNumber.from(fast).mul(gasLimit);
-      console.log('operationFee:', operationFee);
-      // const feePercent = this.getServiceFee(externalAmount);
-      // console.log('feePercent:', feePercent);
-      const expense = operationFee.div(toWei('1'));
-      console.log('expense:', expense);
-      const desiredFee = expense.add(serviceFee.transfer);
-      console.log('desiredFee:', desiredFee);
+      console.log("Operation Fee", operationFee);
+
+      const feePercent = this.getServiceFee(externalAmount);
+      console.log("Fee Percent", feePercent);
+
+      const desiredFee = operationFee.add(feePercent);
+      console.log("Desired Fee", desiredFee);
+      console.log("Fee", fee);
+
       if (BigNumber.from(fee).lt(desiredFee)) {
         console.log('throw new Error(SERVICE_ERRORS.INSUFFICIENT_FEE);');
         throw new Error(SERVICE_ERRORS.GAS_SPIKE);

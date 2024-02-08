@@ -1,0 +1,23 @@
+#!/bin/bash
+
+npm install -g pm2
+pm2 -s info relayer
+if [[ $? -eq 0 ]]; then
+  echo "The Relayer is already running. This script is no longer necessary."
+  echo "You can now manage the processes with pm2."
+  exit 1
+fi
+
+yarn
+yarn prebuild;
+yarn build;
+pm2 start pm2-relayer.config.js
+if [[ $? -ne 0 ]]; then exit 1; fi
+
+echo "Done!"
+
+echo "Do you want pm2 to automatically start on boot? (y/n)"
+read -r response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+  pm2 startup
+fi
