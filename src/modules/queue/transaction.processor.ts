@@ -12,10 +12,16 @@ import { CONTRACT_ERRORS, SERVICE_ERRORS, jobStatus } from '@/constants';
 import { GasPriceService, ProviderService } from '@/services';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const PinataClient = require('@pinata/sdk');
+// eslint-disable-next-line @typescript-eslint/no-var-require
+// onst worker from 'nova_scotia_browser';
 
 import txManagerConfig from '@/config/txManager.config';
 
 import { BaseProcessor } from './base.processor';
+
+// fs for reading public parameters json
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fs = require('fs');
 
 @Injectable()
 @Processor('transaction')
@@ -39,10 +45,15 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
       const { extData, membershipProof } = job.data;
       console.log('extData:', extData);
       console.log('membershipProof:', membershipProof);
-      await this.checkFee({ fee: extData.fee, externalAmount: extData.extAmount });
-      console.log('check fee done');
+
+
+
       await this.checkProof(membershipProof);
       console.log('check proof done');
+
+      await this.checkFee({ fee: extData.fee, externalAmount: extData.extAmount }); /// TODO: Move this one up
+      console.log('check fee done');
+      
       await this.uploadProof(membershipProof, extData);
       console.log('upload proof done');
       const txHash = await this.submitTx(job);
@@ -194,6 +205,35 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
   //TODO: check proof
   async checkProof(proof: any) {
     try {
+      const worker =require('nova_scotia_browser');
+      worker.init_panic_hook();
+      // let result = await worker.verify_compressed_proof()
+      // read public parameters
+      // const publicParams = fs.readFileSync('/Users/ekrembal/Developer/chainway/poi/ProofOfInnocence/privacy-pools-v1-relayer/public/proofOfInnocence.json');
+      // // await worker.init_panic_hook();
+      // // let resul = worker.generate_witness_browser
+      // let result = await worker.verify_compressed_proof(publicParams,proof,"step_in_here" );
+      // console.log('result:', result);
+      let start_json = {"step_in":["0x2c3559f67d9b751565426bdb510a0560f7b19d1415cec2eae68f36368e081ca1"]};
+      const fs = require('fs');
+      // read the file /Users/ekrembal/Developer/chainway/poi/ProofOfInnocence/privacy-pools-v1-relayer/public/proofOfInnocence.json
+      const publicParams = fs.readFileSync('/Users/ekrembal/Developer/chainway/poi/ProofOfInnocence/privacy-pools-v1-relayer/public/pp.json', {encoding: 'utf8'});
+      let start_json_str = JSON.stringify(start_json);
+      
+      console.log("public params first 50 charts", publicParams.toString().substring(0,50));
+      
+      let proof_json = JSON.parse(proof);
+      let proof_str = JSON.stringify(proof_json["proof"]);
+
+
+      console.log("proof is:", proof_str);
+      console.log("start_json_str is:", start_json_str);
+
+      const proof_str_new = fs.readFileSync('/Users/ekrembal/Developer/chainway/poi/ProofOfInnocence/privacy-pools-v1-relayer/public/proof.json', {encoding: 'utf8'});
+      const start_new = fs.readFileSync('/Users/ekrembal/Developer/chainway/poi/ProofOfInnocence/privacy-pools-v1-relayer/public/start.json', {encoding: 'utf8'});
+      
+      let x = worker.verify_compressed_proof(publicParams,proof_str_new,start_new);
+      console.log('x:', x);
     } catch (err) {
       this.handleError(err);
     }
