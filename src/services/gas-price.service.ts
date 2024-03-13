@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { BigNumber } from 'ethers';
-import { GasPriceOracle } from '@tornado/gas-price-oracle';
-import type { GasPrice } from '@tornado/gas-price-oracle/lib/services';
+import { GasPriceOracle } from 'gas-price-oracle';
+import type { GasPrice } from 'gas-price-oracle/lib/services';
 
 import { toWei } from '@/utilities';
 import { SERVICE_ERRORS } from '@/constants';
