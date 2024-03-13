@@ -7,6 +7,11 @@ const NETWORKS_INFO: { [chainId in ChainId] } = {
     gasLimit: BigNumber.from(2000000),
     minimumBalance: '0.1',
   },
+  [ChainId.SEPOLIA]: {
+    symbol: 'sepolia',
+    gasLimit: BigNumber.from(2000000),
+    minimumBalance: '0.1',
+  },
   [ChainId.LOCALHOST]: {
     symbol: 'localhost',
     gasLimit: BigNumber.from(2000000),
@@ -58,4 +63,5 @@ export const SERVICE_ERRORS = {
   TOKEN_RATES: 'Could not get token rates',
   GAS_SPIKE: 'Provided fee is not enough. Probably it is a Gas Price spike, try to resubmit.',
   IPFS_CID_FAIL: 'CIDs do not match',
+  INVALID_RELAYER_ADDRESS: 'Invalid relayer address',
 };

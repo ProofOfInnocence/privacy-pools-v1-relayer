@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { TxManager } from '@tornado/tx-manager';
+import { TxManager } from 'tx-manager';
 import { Job, Queue, DoneCallback } from 'bull';
 
 import { Injectable } from '@nestjs/common';
@@ -37,6 +37,12 @@ export class TransactionProcessor extends BaseProcessor<Transaction> {
   async processTransactions(job: Job<Transaction>, cb: DoneCallback) {
     try {
       const { extData, membershipProof } = job.data;
+      console.log('extData relayer:', extData.relayer);
+      const {rewardAddress} = this.configService.get('base');
+
+      if(extData.relayer != rewardAddress) {
+        throw new Error(SERVICE_ERRORS.INVALID_RELAYER_ADDRESS);
+      }
       console.log('extData:', extData);
       console.log('membershipProof:', membershipProof);
       await this.checkFee({ fee: extData.fee, externalAmount: extData.extAmount });
