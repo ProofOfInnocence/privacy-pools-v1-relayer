@@ -32,7 +32,11 @@ _The following instructions are for Ubuntu 22.10, other operating systems may va
 
    `git clone https://github.com/chainwayxyz/privacy-pools-relayer.git && cd privacy-pools-relayer`
 
-2. Copy `.env.example` to `.env` and setup environment variables in `.env` file
+2. Download the required public parameters for membership proof verification
+
+   `wget -P public https://github.com/ProofOfInnocence/privacy-pools-v1-relayer/releases/download/v0.0.1/public_parameters.json`
+
+3. Copy `.env.example` to `.env` and setup environment variables in `.env` file
 
    - set `CHAIN_ID` (31337 for localhost, 5 for goerli)
    - set `PRIVATE_KEY` for your relayer address (without 0x prefix)
@@ -45,7 +49,7 @@ _The following instructions are for Ubuntu 22.10, other operating systems may va
    - set `CONFIRMATIONS` if needed - how many block confirmations to wait before processing an event. Not recommended to set less than 3
    - set `MAX_GAS_PRICE` if needed - maximum value of gwei value for relayer's transaction
 
-3. Build and deploy the docker container:
+4. Build and deploy the docker container:
    - `npm run build:docker`
    - `docker-compose up -d`
 
