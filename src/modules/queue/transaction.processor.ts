@@ -20,12 +20,12 @@ import { BaseProcessor } from './base.processor';
 // @ts-expect-error
 import { poseidon } from 'circomlib'
 
+import publicParams from '../../..//public/public_parameters.json';
+
 // eslint-disable-next-line
 function poseidonHash(items: any[]) {
   return BigNumber.from(poseidon(items).toString())
 }
-const fs = require('fs');
-const publicParams = fs.readFileSync('/Users/ekrembal/Developer/chainway/poi/ProofOfInnocence/privacy-pools-v1-relayer/public/public_parameters.json', { encoding: 'utf8' });
 
 @Injectable()
 @Processor('transaction')
