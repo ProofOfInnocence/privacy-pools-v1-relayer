@@ -36,3 +36,4 @@ lerna-debug.log*
 dump.rdb
 
 public/public_parameters.json
+public_parameters.json

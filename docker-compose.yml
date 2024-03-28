@@ -4,7 +4,6 @@ services:
   server:
     image: privacy-pools:relayer
     restart: always
-    command: start
     env_file: .env
     environment:
       REDIS_URL: redis:6379
